@@ -483,7 +483,7 @@
         </div>
       </div>
     </section>
-<section id="featured-products" class="products-carousel">
+<section id="noibat" class="products-carousel">
   <div class="container-lg overflow-hidden py-5">
     <div class="row">
       <div class="col-md-12">
@@ -499,8 +499,8 @@
         </div>
 
         <!-- ✅ Swiper layout chuẩn -->
-        <div class="swiper products-carousel-swiper">
-          <div class="swiper-wrapper">
+<div class="swiper products-carousel-swiper">
+<div class="swiper-wrapper">
 
 <%
     List<product> noibat = productDAO.getByLabel("noibat");
@@ -550,8 +550,8 @@
 </div>
 <% } %>
 
-          </div>
-        </div>
+</div>
+</div>
         <!-- /swiper -->
 
       </div>
@@ -598,7 +598,7 @@
       </div>
     </section>
 <!--san pham pho bien-->
-<section id="popular-products" class="products-carousel">
+<section id="phobien" class="products-carousel">
   <div class="container-lg overflow-hidden py-5">
     <div class="row">
       <div class="col-md-12">
@@ -676,15 +676,15 @@
 
 <!--end sp pb-->
 
-<!--san pham moi ve-->
-<section id="popular-products" class="products-carousel">
+<!-- Sản phẩm mới về -->
+<section id="moive" class="products-carousel">
   <div class="container-lg overflow-hidden py-5">
     <div class="row">
       <div class="col-md-12">
         <div class="section-header d-flex flex-wrap justify-content-between my-4">
           <h2 class="section-title">Sản phẩm mới về</h2>
           <div class="d-flex align-items-center">
-            <a href="#" class="btn btn-primary me-2">Xem tất cả</a>
+            <a href="index.jsp#moive" class="btn btn-primary me-2" style="text-decoration: none;">Xem tất cả</a>
             <div class="swiper-buttons">
               <button class="swiper-prev products-carousel-prev btn btn-primary">❮</button>
               <button class="swiper-next products-carousel-next btn btn-primary">❯</button>
@@ -752,6 +752,7 @@
     </div>
   </div>
 </section>
+
 
 
 <!--end product latest-->
@@ -830,30 +831,6 @@
         </div>
       </div>
     </section>
-
-<!--    <section class="pb-4 my-4">
-      <div class="container-lg">
-
-        <div class="bg-warning pt-5 rounded-5">
-          <div class="container">
-            <div class="row justify-content-center align-items-center">
-              <div class="col-md-4">
-                <h2 class="mt-5">Tải xuống ứng dụng LKDT </h2>
-                <p>Đặt hàng trực tuyến nhanh và tiện lợi</p>
-                <div class="d-flex gap-2 flex-wrap mb-5">
-                  <a href="#" title="App store"><img src="images/img-app-store.png" alt="app-store"></a>
-                  <a href="#" title="Google Play"><img src="images/img-google-play.png" alt="google-play"></a>
-                </div>
-              </div>
-              <div class="col-md-5">
-                <img src="images/banner-onl.png" alt="phone" class="img-fluid">
-              </div>
-            </div>
-          </div>
-        </div>
-        
-      </div>
-    </section>-->
 
     <section class="py-4">
       <div class="container-lg">
