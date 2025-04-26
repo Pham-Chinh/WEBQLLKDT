@@ -4,6 +4,7 @@
 <html>
 <head>
     <style>
+        
         h2 { margin-bottom: 20px; }
         .actions { margin-bottom: 10px; }
         .actions input[type=text] {
@@ -28,21 +29,31 @@
             position: fixed;
             z-index: 999;
             left: 0; top: 0;
-            width: 100%; height: 100%;
+            width: 100%;
+            height: 100%;
             background-color: rgba(0,0,0,0.5);
+            overflow: auto;  /* Ẩn phần ngoài modal */
         }
-        .modal-content {
+
+    .modal-content {
             background-color: #fff;
             margin: 10% auto;
             padding: 20px;
             width: 400px;
             border-radius: 8px;
+            max-height: 80vh;  /* Giới hạn chiều cao của modal */
+            overflow-y: auto;  /* Cho phép cuộn nếu nội dung quá dài */
+            position: relative;  /* Đảm bảo vị trí của modal không bị ảnh hưởng bởi các phần tử khác */
         }
+
         .modal-content input,
         .modal-content textarea {
             width: 100%;
             margin-bottom: 10px;
             padding: 8px;
+        }
+        body.modal-open {
+            overflow: hidden;  /* Tắt cuộn trang khi modal hiển thị */
         }
         .product-img {
             width: 80px;
@@ -67,7 +78,7 @@
 
 <table>
     <tr>
-        <th>STT</th><th>Tên</th><th>Mô tả</th><th>Giá</th><th>Ảnh</th><th>Chức năng</th><th>Danh mục</th>
+        <th>STT</th><th>Tên</th><th>Mô tả</th><th>Giá</th><th>Ảnh</th><th>Chức năng</th><th>Danh mục</th><th>Số lượng</th><th>Trạng thái</th>
     </tr>
 <%
     List<product> list = (List<product>) request.getAttribute("listProduct");
@@ -82,7 +93,7 @@
         <td><%= p.getPrice() %> VNĐ</td>
         <td><img src="ImageServlet?id=<%= p.getId() %>" class="product-img"></td>
         <td>
-            <button onclick="openEditProductModal('<%= p.getId() %>', '<%= p.getName() %>', '<%= p.getDescription() %>', '<%= p.getPrice() %>', 'ImageServlet?id=<%= p.getId() %>', '<%= p.getLabel() %>')">Sửa</button>
+            <button onclick="openEditProductModal('<%= p.getId() %>', '<%= p.getName() %>', '<%= p.getDescription() %>', '<%= p.getPrice() %>', 'ImageServlet?id=<%= p.getId() %>', '<%= p.getLabel() %>', <%= p.getQuantity() %>)">Sửa</button>
             <form onsubmit="event.preventDefault(); deleteProduct(<%= p.getId() %>);" style="display:inline;">
                 <button type="submit" onclick="return confirm('Xoá sản phẩm này?')">Xoá</button>
             </form>
@@ -98,7 +109,8 @@
         %>
         <%= labelText %>
         </td>
-
+        <td><%= p.getQuantity() %></td>
+        <td><%= p.getStatus() %></td>
     </tr>
 <%
         }
@@ -115,6 +127,7 @@
             <input type="text" name="name" placeholder="Tên sản phẩm" required>
             <textarea name="description" placeholder="Mô tả sản phẩm" required></textarea>
             <input type="number" step="0.01" name="price" placeholder="Giá" required>
+            <input type="number" step="1" name="quantity" placeholder="Số lượng" required>
             <input type="file" name="image" accept="image/*" onchange="previewAddProductImage(this)" required><br>
             <img id="previewAddProduct" src="#" style="display:none; width:100px; margin-bottom:10px;">
             <label>Phân loại:</label>
@@ -139,6 +152,7 @@
             <input type="text" id="edit-product-name" name="name" required>
             <textarea id="edit-product-description" name="description" required></textarea>
             <input type="number" step="0.01" id="edit-product-price" name="price" required>
+            <input type="number" step="1" id="edit-product-quantity" name="quantity" required>
             <img id="current-product-image" src="" width="100" style="margin-bottom:10px"><br>
             <input type="file" name="image" accept="image/*">
             <label>Phân loại:</label>
@@ -159,14 +173,21 @@
         document.getElementById("addProductModal").style.display = "block";
     }
 
-    function openEditProductModal(id, name, desc, price, img, label) {
+    function openEditProductModal(id, name, desc, price, img, label, quantity) {
+        document.body.classList.add('modal-open');
         document.getElementById("edit-product-id").value = id;
         document.getElementById("edit-product-name").value = name;
         document.getElementById("edit-product-description").value = desc;
         document.getElementById("edit-product-price").value = price;
+        document.getElementById("edit-product-quantity").value = quantity; // Thêm giá trị quantity
         document.getElementById("current-product-image").src = img;
         document.getElementById("edit-product-label").value = label;
         document.getElementById("editProductModal").style.display = "block";
+    }
+
+    function closeModal(modalId) {
+        document.body.classList.remove('modal-open'); 
+        document.getElementById(modalId).style.display = "none";  // Đảm bảo modal được ẩn khi nhấn hủy
     }
 
     function previewAddProductImage(input) {

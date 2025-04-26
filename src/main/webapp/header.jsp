@@ -1,5 +1,6 @@
 <%@page pageEncoding="UTF-8"%>
 <!DOCTYPE html>
+
 <html>
 <head>
     <title>Website bán linh kiện điện tử</title>
@@ -249,9 +250,12 @@
                 </select>
               </div>
               <div class="col-11 col-md-7">
-                <form id="search-form" class="text-center" action="index.jsp" method="post">
-                  <input type="text" class="form-control border-0 bg-transparent" placeholder="Tìm kiếm sản phẩm">
-                </form>
+                <form id="search-form" class="text-center" action="timkiemsp.jsp" method="get">
+                <input type="text" id="search-input" name="keyword" class="form-control border-0 bg-transparent" placeholder="Tìm kiếm sản phẩm" autocomplete="off">
+                <div id="suggestion-box" class="bg-white border rounded position-absolute z-3 mt-1" style="display:none; max-height: 300px; overflow-y: auto;"></div>
+
+               </form>
+
               </div>
               <div class="col-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M21.71 20.29L18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 7-7a7 7 0 0 1-7 7Z"/></svg>
@@ -308,6 +312,7 @@
       </div>
     </header>
     <body>
- 
+     <script src="js/goiysp.js"></script>
     </body>
+    
 </html>

@@ -57,10 +57,16 @@ public class productServlet extends HttpServlet {
         String desc = request.getParameter("description");
         String priceParam = request.getParameter("price");
         String label = request.getParameter("label");
+        String quantityParam = request.getParameter("quantity"); // Lấy thông tin quantity từ form
         double price = 0;
+        int quantity = 0; // Khởi tạo quantity mặc định
 
         if (priceParam != null && !priceParam.trim().isEmpty()) {
             price = Double.parseDouble(priceParam);
+        }
+
+        if (quantityParam != null && !quantityParam.trim().isEmpty()) {
+            quantity = Integer.parseInt(quantityParam); // Chuyển đổi quantity từ chuỗi sang số nguyên
         }
 
         // ✅ Xử lý ảnh sản phẩm
@@ -73,20 +79,19 @@ public class productServlet extends HttpServlet {
         }
 
         if ("add".equals(action)) {
-            product p = new product(0, name, desc, price, imageBytes, label);
+            product p = new product(0, name, desc, price, imageBytes, label, quantity); // Sử dụng quantity
             productDAO.add(p);
         } else if ("edit".equals(action)) {
             product existing = productDAO.getProductById(id);
             if (imageBytes == null && existing != null) {
                 imageBytes = existing.getImage();
             }
-            product p = new product(id, name, desc, price, imageBytes, label);
+            product p = new product(id, name, desc, price, imageBytes, label, quantity); // Sử dụng quantity
             productDAO.update(p);
         }
 
         String keyword = request.getParameter("search");
         List<product> list = productDAO.getAll(keyword != null ? keyword : "");
-        request.setAttribute("listProduct", list);
         request.setAttribute("listProduct", list);
         request.getRequestDispatcher("manager-product.jsp").forward(request, response);
     }

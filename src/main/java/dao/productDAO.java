@@ -29,7 +29,8 @@ public class productDAO {
                     rs.getString("description"),
                     rs.getDouble("price"),
                     rs.getBytes("image"),
-                    rs.getString("label") // lấy label từ DB
+                    rs.getString("label"), // lấy label từ DB
+                    rs.getInt("quantity")
                 );
                 list.add(p);
             }
@@ -41,13 +42,14 @@ public class productDAO {
 
     public static void add(product p) {
         try (Connection conn = Accounts.getConnection()) {
-            String sql = "INSERT INTO products (name, description, price, image, label) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO products (name, description, price, image, label,quantity) VALUES (?, ?, ?, ?, ?,?)";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, p.getName());
             ps.setString(2, p.getDescription());
             ps.setDouble(3, p.getPrice());
             ps.setBytes(4, p.getImage());
             ps.setString(5, p.getLabel()); // thêm label
+            ps.setInt(6, p.getQuantity());
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,14 +58,15 @@ public class productDAO {
 
     public static void update(product p) {
         try (Connection conn = Accounts.getConnection()) {
-            String sql = "UPDATE products SET name=?, description=?, price=?, image=?, label=? WHERE id=?";
+            String sql = "UPDATE products SET name=?, description=?, price=?, image=?, label=?,quantity=? WHERE id=?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, p.getName());
             ps.setString(2, p.getDescription());
             ps.setDouble(3, p.getPrice());
             ps.setBytes(4, p.getImage());
             ps.setString(5, p.getLabel()); // cập nhật label
-            ps.setInt(6, p.getId());
+            ps.setInt(7, p.getId());
+            ps.setInt(6, p.getQuantity());
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,7 +98,9 @@ public class productDAO {
                     rs.getString("description"),
                     rs.getDouble("price"),
                     rs.getBytes("image"),
-                    rs.getString("label")
+                    rs.getString("label"),
+                    rs.getInt("quantity")
+                    
                 );
             }
         } catch (Exception e) {
@@ -119,7 +124,8 @@ public class productDAO {
                     rs.getString("description"),
                     rs.getDouble("price"),
                     rs.getBytes("image"),
-                    rs.getString("label")
+                    rs.getString("label"),
+                    rs.getInt("quantity")
                 );
                 list.add(p);
             }
@@ -141,7 +147,8 @@ public class productDAO {
                 rs.getString("description"),
                 rs.getDouble("price"),
                 rs.getBytes("image"),
-                rs.getString("label")
+                rs.getString("label"),
+                rs.getInt("quantity")
             );
             list.add(p);
         }
@@ -168,6 +175,54 @@ public static Map<String, Integer> getProductCountsByLabel() {
     }
     return map;
 }
+public static List<product> searchProductsByName(String keyword) {
+    List<product> list = new ArrayList<>();
+    try {
+        Connection conn = Accounts.getConnection();
+        String sql = "SELECT * FROM products WHERE name LIKE ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, "%" + keyword + "%");
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            product p = new product();
+            p.setId(rs.getInt("id"));
+            p.setName(rs.getString("name"));
+            p.setPrice(rs.getInt("price"));
+            p.setDescription(rs.getString("description"));
+            p.setLabel(rs.getString("label"));
+            list.add(p);
+        }
+        conn.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+public static List<product> searchByKeyword(String keyword) {
+    List<product> list = new ArrayList<>();
+    try {
+        Connection conn = Accounts.getConnection();
+        String sql = "SELECT * FROM products WHERE name LIKE ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, "%" + keyword + "%");
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            product p = new product();
+            p.setId(rs.getInt("id"));
+            p.setName(rs.getString("name"));
+            p.setPrice(rs.getInt("price"));
+            p.setLabel(rs.getString("label"));
+            p.setDescription(rs.getString("description"));
+            list.add(p);
+        }
+        conn.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
+
 
 
 

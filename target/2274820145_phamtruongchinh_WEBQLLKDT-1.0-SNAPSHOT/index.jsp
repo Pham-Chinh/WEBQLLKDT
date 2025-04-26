@@ -4,6 +4,7 @@
 <%@ page import="dao.productDAO, model.product, java.util.List" %>
 
 
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -25,7 +26,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-
+    
   </head>
   <body>
 
@@ -93,48 +94,63 @@
       </div>
     </div>
 
-    <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasCart">
-      <div class="offcanvas-header justify-content-center">
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+   <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasCart">
+  <div class="offcanvas-header justify-content-center">
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="order-md-last">
+      <h4 class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-primary">Giỏ hàng của bạn</span>
+        <span id="cart-total-items" class="badge bg-primary rounded-pill">0</span>
+      </h4>
+      <ul id="cart-items" class="list-group mb-3">
+        <!-- Sản phẩm sẽ được chèn động tại đây -->
+      </ul>
+      <div class="d-flex justify-content-between mb-3">
+        <span>Tổng cộng</span>
+        <strong id="cart-total-price">0₫</strong>
       </div>
-      <div class="offcanvas-body">
-        <div class="order-md-last">
-          <h4 class="d-flex justify-content-between align-items-center mb-3">
-            <span class="text-primary">Giỏ hàng của bạn</span>
-            <span class="badge bg-primary rounded-pill">3</span>
-          </h4>
-          <ul class="list-group mb-3">
-            <li class="list-group-item d-flex justify-content-between lh-sm">
-              <div>
-                <h6 class="my-0">Growers cider</h6>
-                <small class="text-body-secondary">Brief description</small>
-              </div>
-              <span class="text-body-secondary">$12</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between lh-sm">
-              <div>
-                <h6 class="my-0">Fresh grapes</h6>
-                <small class="text-body-secondary">Brief description</small>
-              </div>
-              <span class="text-body-secondary">$8</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between lh-sm">
-              <div>
-                <h6 class="my-0">Heinz tomato ketchup</h6>
-                <small class="text-body-secondary">Brief description</small>
-              </div>
-              <span class="text-body-secondary">$5</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
-              <span>Total (USD)</span>
-              <strong>$20</strong>
-            </li>
-          </ul>
-  
-          <button class="w-100 btn btn-primary btn-lg" type="submit">Đi đến thanh toán</button>
-        </div>
-      </div>
+      <button class="w-100 btn btn-primary btn-lg" type="submit">Đi đến thanh toán</button>
     </div>
+  </div>
+</div>
+
+<script>
+  function renderCart() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItemsEl = document.getElementById('cart-items');
+    const totalItemsEl = document.getElementById('cart-total-items');
+    const totalPriceEl = document.getElementById('cart-total-price');
+
+    cartItemsEl.innerHTML = '';
+    let total = 0;
+    let totalItems = 0;
+
+    cart.forEach(item => {
+      const itemTotal = item.price * item.quantity;
+      total += itemTotal;
+      totalItems += item.quantity;
+
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between lh-sm';
+      li.innerHTML = `
+        <div>
+          <h6 class="my-0">${item.name}</h6>
+          <small class="text-body-secondary">SL: ${item.quantity}</small>
+        </div>
+        <span class="text-body-secondary">${itemTotal.toLocaleString()}₫</span>
+      `;
+      cartItemsEl.appendChild(li);
+    });
+
+    totalItemsEl.innerText = totalItems;
+    totalPriceEl.innerText = `${total.toLocaleString()}₫`;
+  }
+
+  document.addEventListener('DOMContentLoaded', renderCart);
+</script>
+
     
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar">
 
@@ -254,9 +270,11 @@
                 </select>
               </div>
               <div class="col-11 col-md-7">
-                <form id="search-form" class="text-center" action="index.jsp" method="post">
-                  <input type="text" class="form-control border-0 bg-transparent" placeholder="Tìm kiếm sản phẩm">
-                </form>
+                <form id="search-form" class="text-center" action="timkiemsp.jsp" method="get">
+                <input type="text" id="search-input" name="keyword" class="form-control border-0 bg-transparent" placeholder="Tìm kiếm sản phẩm" autocomplete="off">
+                <div id="suggestion-box" class="bg-white border rounded position-absolute z-3 mt-1" style="display:none; max-height: 300px; overflow-y: auto;"></div>
+
+               </form>
               </div>
               <div class="col-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M21.71 20.29L18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 7-7a7 7 0 0 1-7 7Z"/></svg>
@@ -1054,5 +1072,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
     <script src="js/plugins.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/goiysp.js"></script>
+
   </body>
 </html>
