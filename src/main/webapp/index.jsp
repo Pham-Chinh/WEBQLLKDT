@@ -3,8 +3,6 @@
 <%@ page import="dao.productDAO, model.product, java.util.List" %>
 <%@ page import="dao.productDAO, model.product, java.util.List" %>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -26,7 +24,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    
+    <style>
+    .product-item img {
+          width: 100%;  /* Chiếm toàn bộ chiều rộng của phần tử chứa */
+          height: 200px; /* Đảm bảo chiều cao cố định cho tất cả ảnh */
+          object-fit: cover;  /* Đảm bảo hình ảnh không bị méo và sẽ được cắt nếu cần thiết */
+      }
+    </style>
   </head>
   <body>
 
@@ -94,6 +98,8 @@
       </div>
     </div>
 
+    
+<!--  giỏ hàng-->
    <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasCart">
   <div class="offcanvas-header justify-content-center">
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -116,42 +122,9 @@
   </div>
 </div>
 
-<script>
-  function renderCart() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const cartItemsEl = document.getElementById('cart-items');
-    const totalItemsEl = document.getElementById('cart-total-items');
-    const totalPriceEl = document.getElementById('cart-total-price');
 
-    cartItemsEl.innerHTML = '';
-    let total = 0;
-    let totalItems = 0;
 
-    cart.forEach(item => {
-      const itemTotal = item.price * item.quantity;
-      total += itemTotal;
-      totalItems += item.quantity;
-
-      const li = document.createElement('li');
-      li.className = 'list-group-item d-flex justify-content-between lh-sm';
-      li.innerHTML = `
-        <div>
-          <h6 class="my-0">${item.name}</h6>
-          <small class="text-body-secondary">SL: ${item.quantity}</small>
-        </div>
-        <span class="text-body-secondary">${itemTotal.toLocaleString()}₫</span>
-      `;
-      cartItemsEl.appendChild(li);
-    });
-
-    totalItemsEl.innerText = totalItems;
-    totalPriceEl.innerText = `${total.toLocaleString()}₫`;
-  }
-
-  document.addEventListener('DOMContentLoaded', renderCart);
-</script>
-
-    
+   
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar">
 
       <div class="offcanvas-header justify-content-between">
@@ -501,6 +474,8 @@
         </div>
       </div>
     </section>
+
+<!-- Section Sản phẩm nổi bật -->
 <section id="noibat" class="products-carousel">
   <div class="container-lg overflow-hidden py-5">
     <div class="row">
@@ -517,68 +492,79 @@
         </div>
 
         <!-- ✅ Swiper layout chuẩn -->
-<div class="swiper products-carousel-swiper">
-<div class="swiper-wrapper">
+        <div class="swiper products-carousel-swiper">
+          <div class="swiper-wrapper">
 
-<%
-    List<product> noibat = productDAO.getByLabel("noibat");
-    for (product p : noibat) {
-%>
-<div class="product-item swiper-slide">
-  <figure>
-    <a href="product-detail.jsp?id=<%= p.getId() %>" title="<%= p.getName() %>">
-      <img src="ImageServlet?id=<%= p.getId() %>" alt="<%= p.getName() %>" class="tab-image" style="height:160px;object-fit:cover;">
-    </a>
-  </figure>
-  <div class="d-flex flex-column text-center">
-    <h3 class="fs-6 fw-normal"><%= p.getName() %></h3>
-    <div>
-      <span class="rating">
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-half"></use></svg>
-      </span>
-      <span>(222)</span>
-    </div>
-    <div class="d-flex justify-content-center align-items-center gap-2">
-      <del><%= p.getPrice() + 10000 %></del>
-      <span class="text-dark fw-semibold"><%= p.getPrice() %> VNĐ</span>
-      <span class="badge bg-warning-subtle text-dark px-2">10% OFF</span>
-    </div>
-    <div class="button-area p-3 pt-0">
-      <div class="row g-1 mt-2">
-        <div class="col-3">
-          <input type="number" name="quantity" class="form-control border-dark-subtle input-number quantity" value="1">
-        </div>
-        <div class="col-7">
-          <a href="#" class="btn btn-primary rounded-1 p-2 fs-7 btn-cart">
-            <svg width="18" height="18"><use xlink:href="#cart"></use></svg> Add to Cart
-          </a>
-        </div>
-        <div class="col-2">
-          <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6">
-            <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<% } %>
+            <%
+            List<product> noibat = productDAO.getByLabel("noibat");
+            for (product p : noibat) {
+                // Kiểm tra trạng thái sản phẩm
+                String stockStatus = (p.getQuantity() > 0) ? "Còn hàng" : "Hết hàng";
+            %>
 
-</div>
-</div>
-        <!-- /swiper -->
+            <div class="product-item swiper-slide">
+              <figure>
+                <a href="product-detail.jsp?id=<%= p.getId() %>" title="<%= p.getName() %>">
+                  <img src="ImageServlet?id=<%= p.getId() %>" alt="<%= p.getName() %>" class="tab-image">
+                </a>
+              </figure>
+              <div class="d-flex flex-column text-center">
+                <h3 class="fs-6 fw-normal"><%= p.getName() %></h3>
+                <div>
+                  <span class="rating">
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-half"></use></svg>
+                  </span>
+                  <span>(222)</span>
+                </div>
+                <div class="d-flex justify-content-center align-items-center gap-2">
+                  
+                  <span class="text-dark fw-semibold"><%= p.getPrice() %> VNĐ</span>
+                  
+                </div>
+                <div class="stock-status">
+                  <span class="badge <%= p.getQuantity() > 0 ? "bg-success" : "bg-danger" %> text-white">
+                    <%= stockStatus %>
+                  </span>
+                </div>
+                <div class="button-area p-3 pt-0">
+                  <div class="row g-1 mt-2">
+                    <div class="col-3">
+                      <input type="number" name="quantity" class="form-control border-dark-subtle input-number" value="1">
+                    </div>
+                    <div class="col-7">
+                 
+                        <button class="btn btn-primary btn-cart" data-product-id="<%= p.getId() %>">
+  Add to Cart
+</button>
 
+
+
+                    
+                    </div>
+                    <div class="col-2">
+                      <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6">
+                        <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <% } %>
+
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
-
-
-    <section>
+<!--end-->
+<section>
       <div class="container-lg">
 
         <div class="bg-secondary text-light py-5 my-5" style="background: url('images/banner-newweb.png') no-repeat; background-size: cover;">
@@ -614,7 +600,7 @@
         </div>
         
       </div>
-    </section>
+</section>
 <!--san pham pho bien-->
 <section id="phobien" class="products-carousel">
   <div class="container-lg overflow-hidden py-5">
@@ -634,54 +620,79 @@
         <!-- ✅ Swiper layout chuẩn -->
         <div class="swiper products-carousel-swiper">
           <div class="swiper-wrapper">
+            <%
+            List<product> phobien = productDAO.getByLabel("phobien");
+            for (product p : phobien) {
+                // Kiểm tra xem sản phẩm có còn hàng không
+                String stockStatus = (p.getQuantity() > 0) ? "Còn hàng" : "Hết hàng"; 
+            %>
+            <div class="product-item swiper-slide">
+              <figure>
+                <a href="product-detail.jsp?id=<%= p.getId() %>" title="<%= p.getName() %>">
+                  <img src="ImageServlet?id=<%= p.getId() %>" alt="<%= p.getName() %>" class="tab-image" style="height:160px;object-fit:cover;">
+                </a>
+              </figure>
+              <div class="d-flex flex-column text-center">
+                <h3 class="fs-6 fw-normal"><%= p.getName() %></h3>
+                <div>
+                  <span class="rating">
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-half"></use></svg>
+                  </span>
+                  <span>(222)</span>
+                </div>
+                <div class="d-flex justify-content-center align-items-center gap-2">
+                  <span class="text-dark fw-semibold"><%= p.getPrice() %> VNĐ</span>
+                </div>
 
-<%
-    List<product> phobien = productDAO.getByLabel("phobien");
-    for (product p : phobien) {
-%>
-<div class="product-item swiper-slide">
-  <figure>
-    <a href="product-detail.jsp?id=<%= p.getId() %>" title="<%= p.getName() %>">
-      <img src="ImageServlet?id=<%= p.getId() %>" alt="<%= p.getName() %>" class="tab-image" style="height:160px;object-fit:cover;">
-    </a>
-  </figure>
-  <div class="d-flex flex-column text-center">
-    <h3 class="fs-6 fw-normal"><%= p.getName() %></h3>
-    <div>
-      <span class="rating">
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-half"></use></svg>
-      </span>
-      <span>(222)</span>
-    </div>
-    <div class="d-flex justify-content-center align-items-center gap-2">
-      <del><%= p.getPrice() + 10000 %></del>
-      <span class="text-dark fw-semibold"><%= p.getPrice() %> VNĐ</span>
-      <span class="badge bg-warning-subtle text-dark px-2">10% OFF</span>
-    </div>
-    <div class="button-area p-3 pt-0">
-      <div class="row g-1 mt-2">
-        <div class="col-3">
-          <input type="number" name="quantity" class="form-control border-dark-subtle input-number quantity" value="1">
-        </div>
-        <div class="col-7">
-          <a href="#" class="btn btn-primary rounded-1 p-2 fs-7 btn-cart">
-            <svg width="18" height="18"><use xlink:href="#cart"></use></svg> Add to Cart
-          </a>
-        </div>
-        <div class="col-2">
-          <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6">
-            <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<% } %>
+                <!-- Hiển thị trạng thái hết hàng hoặc còn hàng -->
+                <div class="stock-status">
+                  <span class="badge <%= p.getQuantity() > 0 ? "bg-success" : "bg-danger" %> text-white">
+                    <%= stockStatus %>
+                  </span>
+                </div>
+
+                <!-- Số lượng và nút Add to Cart -->
+                <div class="button-area p-3 pt-0">
+                  <div class="row g-1 mt-2">
+                    <div class="col-3">
+                      <!-- Số lượng tĩnh, không thay đổi được khi hết hàng -->
+                      <input type="number" name="quantity" class="form-control border-dark-subtle input-number quantity" value="1" <%= p.getQuantity() == 0 ? "disabled" : "" %> />
+                    </div>
+                    <div class="col-7">
+                      <!-- Nút Thêm vào giỏ hàng -->
+                      <form action="AddtoCart" method="post">
+    <input type="hidden" name="productId" value="<%= p.getId() %>">
+    <input type="hidden" name="quantity" value="1"> <!-- thêm quantity -->
+    <input type="hidden" name="name" value="<%= p.getName() %>">
+    <input type="hidden" name="price" value="<%= p.getPrice() %>">
+    <input type="hidden" name="image" value="<%= p.getImage() %>">
+    
+    <button type="submit" class="btn btn-primary btn-cart"
+            <%= p.getQuantity() == 0 ? "disabled style='pointer-events:none;opacity:0.5'" : "" %>>
+        <svg width="18" height="18">
+            <use xlink:href="#cart"></use>
+        </svg>
+        Add to Cart
+    </button>
+</form>
+
+
+                    </div>
+
+                    <div class="col-2">
+                      <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6">
+                        <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% } %>
 
           </div>
         </div>
@@ -692,9 +703,12 @@
   </div>
 </section>
 
+
+
 <!--end sp pb-->
 
-<!-- Sản phẩm mới về -->
+
+<!-- Section Sản phẩm mới về -->
 <section id="moive" class="products-carousel">
   <div class="container-lg overflow-hidden py-5">
     <div class="row">
@@ -714,66 +728,77 @@
         <div class="swiper products-carousel-swiper">
           <div class="swiper-wrapper">
 
-<%
-    List<product> moive = productDAO.getByLabel("moive");
-    for (product p : moive) {
-%>
-<div class="product-item swiper-slide">
-  <figure>
-    <a href="product-detail.jsp?id=<%= p.getId() %>" title="<%= p.getName() %>">
-      <img src="ImageServlet?id=<%= p.getId() %>" alt="<%= p.getName() %>" class="tab-image" style="height:160px;object-fit:cover;">
-    </a>
-  </figure>
-  <div class="d-flex flex-column text-center">
-    <h3 class="fs-6 fw-normal"><%= p.getName() %></h3>
-    <div>
-      <span class="rating">
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-half"></use></svg>
-      </span>
-      <span>(222)</span>
-    </div>
-    <div class="d-flex justify-content-center align-items-center gap-2">
-      <del><%= p.getPrice() + 10000 %></del>
-      <span class="text-dark fw-semibold"><%= p.getPrice() %> VNĐ</span>
-      <span class="badge bg-warning-subtle text-dark px-2">10% OFF</span>
-    </div>
-    <div class="button-area p-3 pt-0">
-      <div class="row g-1 mt-2">
-        <div class="col-3">
-          <input type="number" name="quantity" class="form-control border-dark-subtle input-number quantity" value="1">
-        </div>
-        <div class="col-7">
-          <a href="#" class="btn btn-primary rounded-1 p-2 fs-7 btn-cart">
-            <svg width="18" height="18"><use xlink:href="#cart"></use></svg> Add to Cart
-          </a>
-        </div>
-        <div class="col-2">
-          <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6">
-            <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<% } %>
+            <%
+            List<product> moive = productDAO.getByLabel("moive");
+            for (product p : moive) {
+                // Kiểm tra trạng thái sản phẩm
+                String stockStatus = (p.getQuantity() > 0) ? "Còn hàng" : "Hết hàng";
+            %>
+
+            <div class="product-item swiper-slide">
+              <figure>
+                <a href="product-detail.jsp?id=<%= p.getId() %>" title="<%= p.getName() %>">
+                  <img src="ImageServlet?id=<%= p.getId() %>" alt="<%= p.getName() %>" class="tab-image">
+                </a>
+              </figure>
+              <div class="d-flex flex-column text-center">
+                <h3 class="fs-6 fw-normal"><%= p.getName() %></h3>
+                <div>
+                  <span class="rating">
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-half"></use></svg>
+                  </span>
+                  <span>(222)</span>
+                </div>
+                <div class="d-flex justify-content-center align-items-center gap-2">
+                  <del><%= p.getPrice() + 10000 %></del>
+                  <span class="text-dark fw-semibold"><%= p.getPrice() %> VNĐ</span>
+                  <span class="badge bg-warning-subtle text-dark px-2">10% OFF</span>
+                </div>
+                
+                <!-- Hiển thị trạng thái "Còn hàng" hay "Hết hàng" -->
+                <div class="stock-status">
+                  <span class="badge <%= p.getQuantity() > 0 ? "bg-success" : "bg-danger" %> text-white">
+                    <%= stockStatus %>
+                  </span>
+                </div>
+
+                <div class="button-area p-3 pt-0">
+                  <div class="row g-1 mt-2">
+                    <div class="col-3">
+                      <input type="number" name="quantity" class="form-control border-dark-subtle input-number" value="1" <%= p.getQuantity() == 0 ? "disabled" : "" %>>
+                    </div>
+                    <div class="col-7">
+                      <a href="#" class="btn btn-primary rounded-1 p-2 fs-7 btn-cart" <%= p.getQuantity() == 0 ? "disabled" : "" %>>
+                        <svg width="18" height="18"><use xlink:href="#cart"></use></svg> Add to Cart
+                      </a>
+                    </div>
+                    <div class="col-2">
+                      <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6">
+                        <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <% } %>
 
           </div>
         </div>
-        <!-- /swiper -->
-
       </div>
     </div>
   </div>
 </section>
 
-
-
 <!--end product latest-->
+
+
+
     <section id="latest-blog" class="pb-4">
       <div class="container-lg">
         <div class="row">
@@ -1067,12 +1092,15 @@
         </div>
       </div>
     </div>
-    <script src="js/jquery-1.11.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-    <script src="js/plugins.js"></script>
-    <script src="js/script.js"></script>
-    <script src="js/goiysp.js"></script>
+<script src="js/jquery-1.11.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+<script src="js/plugins.js"></script>
+<script src="js/script.js"></script>
+<script src="js/goiysp.js"></script>
+<script>
 
-  </body>
+
+
+</body>
 </html>

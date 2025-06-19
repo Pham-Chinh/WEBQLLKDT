@@ -10,10 +10,18 @@
         .actions input[type=text] {
             padding: 6px; width: 200px;
         }
-        .actions button {
-            padding: 6px 10px;
-            margin-left: 5px;
+        .actions button,table button {
+    background-color: gold;
+    color: black;
+    border: 2px solid #caa100; 
+    border-radius: 4px;
+    cursor: pointer;
         }
+        table button:hover,
+.actions button:hover {
+    background-color: #e6c200; /* màu vàng đậm khi hover */
+    border-color: #a88900;  
+} 
         table {
             width: 100%;
             border-collapse: collapse;

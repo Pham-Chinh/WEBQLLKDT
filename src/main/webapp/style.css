@@ -63,6 +63,8 @@ body {
   --bs-btn-disabled-bg: #d3d7dd;
   --bs-btn-disabled-border-color: transparent;
 }
+
+
 .btn-outline-primary {
   --bs-btn-color: var(--bs-primary);
   --bs-btn-border-color: var(--bs-primary);

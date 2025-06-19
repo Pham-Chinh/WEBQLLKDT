@@ -21,5 +21,8 @@
  <a href="timkiemsp.jsp?keyword=<%= keyword %>" class="d-block text-center py-2 text-primary bg-light text-decoration-none">
   Hiển thị tất cả kết quả cho "<%= keyword %>"
 </a>
-
+<% } else { %>
+  <div class="text-center py-2 text-muted bg-light">
+    Không tìm thấy kết quả yêu cầu cho "<%= keyword %>"
+  </div>
 <% } %>
