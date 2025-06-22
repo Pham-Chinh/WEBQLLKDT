@@ -77,6 +77,31 @@ public class accountDAO {
         e.printStackTrace();
     }
 }
+    // check login
+public static taikhoan checkLogin(String username, String password) {
+    String sql = "SELECT * FROM accounts WHERE username = ? AND password = ?";
+    try (Connection conn = Accounts.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        
+        ps.setString(1, username);
+        ps.setString(2, password);
+        ResultSet rs = ps.executeQuery();
+        
+        if (rs.next()) {
+            // Nếu tìm thấy, tạo và trả về đối tượng taikhoan
+            taikhoan tk = new taikhoan();
+            tk.setId(rs.getInt("id"));
+            tk.setUsername(rs.getString("username"));
+            tk.setPassword(rs.getString("password"));
+            tk.setRole(rs.getString("role"));
+            return tk;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    // Nếu không tìm thấy hoặc có lỗi, trả về null
+    return null; 
+}
 
 
 }

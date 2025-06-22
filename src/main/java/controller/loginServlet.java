@@ -97,11 +97,7 @@ public class loginServlet extends HttpServlet {
             else{
                 response.sendRedirect("login.jsp?error=1");
 
-            }
-              
-            
-            
-            
+            }     
         } catch (Exception e) {
              e.printStackTrace();
             response.getWriter().println("Lỗi kết nối hoặc truy vấn CSDL!");

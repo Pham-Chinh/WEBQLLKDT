@@ -73,6 +73,7 @@ public class resgisterServlet extends HttpServlet {
             throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+      
         try(Connection conn = Accounts.getConnection()) {
             String checkquer = "SELECT * FROM accounts WHERE username=?";
             PreparedStatement checkSt = conn.prepareStatement(checkquer);

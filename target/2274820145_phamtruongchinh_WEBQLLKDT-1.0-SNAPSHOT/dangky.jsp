@@ -66,7 +66,7 @@
 <div class="register-box">
     <h2>Đăng ký tài khoản</h2>
     <form action="dangky" method="post">
-        <input type="text" name="username" placeholder="Tên người dùng" required>
+        <input type="text" name="username" placeholder="Tên tài khoản" required>
         <input type="password" name="password" placeholder="Mật khẩu" required>
         <input type="password" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
         <button type="submit">Đăng ký</button>

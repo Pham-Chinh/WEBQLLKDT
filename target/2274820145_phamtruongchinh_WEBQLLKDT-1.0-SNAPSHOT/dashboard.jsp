@@ -102,7 +102,7 @@
     <a href="#" onclick="showSection('dashboard')"><i class='bx bxs-dashboard'></i><span>Dashboard</span></a>
     <a href="#" onclick="loadSection('manager-account', 'accounts')"><i class='bx bxs-user'></i><span>QL Tài khoản</span></a>
     <a href="#" onclick="loadSection('manager-product', 'products')"><i class='bx bxs-box'></i><span>QL Sản phẩm</span></a>
-    <a href="#" onclick="loadSection('manager-order.jsp', 'orders')"><i class='bx bxs-cart'></i><span>QL Đơn hàng</span></a>
+    <a href="#" onclick="loadSection('order-manager', 'orders')"><i class='bx bxs-cart'></i><span>QL Đơn hàng</span></a>
     <a href="login.jsp""><i class='bx bx-log-out'></i><span>Đăng xuất</span></a>
 </div>
 
