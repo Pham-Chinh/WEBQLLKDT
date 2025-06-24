@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.CartDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Cart;
+import model.taikhoan;
 
 /**
  *
@@ -74,36 +76,41 @@ public class UpdatetoCart extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Cart cart = (Cart)session.getAttribute("cart");
-        if (cart != null && !cart.isEmpty()) {
-            try {
-                // Bước 3: Lấy ID và số lượng mới từ request.
-                // Dữ liệu từ request luôn luôn là kiểu String.
-                String productIdStr = request.getParameter("id");
-                String quantityStr = request.getParameter("qty");
+    
+    try {
+        int productId = Integer.parseInt(request.getParameter("id"));
+        int newQuantity = Integer.parseInt(request.getParameter("qty"));
 
-                // Bước 4: Ép kiểu dữ liệu String sang int để xử lý.
-                // Đây là bước cực kỳ quan trọng để khớp với kiểu dữ liệu trong Cart.java.
-                int productId = Integer.parseInt(productIdStr);
-                int newQuantity = Integer.parseInt(quantityStr);
+        // ✅ BƯỚC QUAN TRỌNG: KIỂM TRA XEM AI ĐANG THAO TÁC
+        taikhoan account = (taikhoan) session.getAttribute("account");
 
-                // Bước 5: Gọi phương thức trong lớp Cart để cập nhật.
-                // Phương thức này chúng ta đã sửa trong Cart.java.
-                cart.updateItemQuantity(productId, newQuantity);
+        if (account != null) {
+            // ---- NẾU ĐÃ ĐĂNG NHẬP: GỌI DAO ĐỂ CẬP NHẬT DATABASE ----
+            int userId = account.getId();
+            
+            // Dòng debug để xem servlet có đi đúng nhánh không
+            System.out.println("DEBUG: Đang cập nhật DATABASE cho User ID: " + userId + ", Product ID: " + productId);
+            
+            CartDAO.updateQuantity(userId, productId, newQuantity);
+
+        } else {
+            // ---- NẾU LÀ KHÁCH: SỬA GIỎ HÀNG TRONG SESSION (LOGIC CŨ CỦA BẠN) ----
+            Cart cart = (Cart) session.getAttribute("cart");
+            if (cart != null) {
+                // Dòng debug để xem servlet có đi đúng nhánh không
+                System.out.println("DEBUG: Đang cập nhật SESSION cho Guest.");
                 
-                // Bước 6: LƯU LẠI giỏ hàng đã thay đổi vào session.
-                // Nếu thiếu dòng này, mọi thay đổi sẽ mất hết!
-                session.setAttribute("cart", cart);
-
-            } catch (NumberFormatException e) {
-                // Bắt lỗi nếu id hoặc qty không phải là số hợp lệ.
-                System.out.println("Lỗi ép kiểu tham số: " + e.getMessage());
-                // Không làm gì cả và chỉ chuyển hướng về giỏ hàng.
+                cart.updateItemQuantity(productId, newQuantity);
+                session.setAttribute("cart", cart); // Lưu lại giỏ hàng vào session
             }
         }
-        
-        // Bước 7: Chuyển hướng người dùng trở lại trang giỏ hàng để thấy sự thay đổi.
-        response.sendRedirect("cart.jsp");
+    } catch (NumberFormatException e) {
+        System.out.println("Lỗi ép kiểu tham số: " + e.getMessage());
+        e.printStackTrace();
+    }
+    
+    // Luôn chuyển hướng về trang giỏ hàng sau khi xử lý xong
+    response.sendRedirect("cart.jsp");
     }
     @Override
     public String getServletInfo() {

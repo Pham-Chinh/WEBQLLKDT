@@ -78,7 +78,7 @@
         </td>
         <td>
             <button>Xem chi tiết</button>
-            <button>Cập nhật TT</button>
+            <button>Cập nhật</button>
         </td>
     </tr>
     <%

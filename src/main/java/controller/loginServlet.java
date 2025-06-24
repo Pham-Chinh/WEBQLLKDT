@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controller;
+import dao.accountDAO;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.taikhoan;
 
 /**
  *
@@ -74,35 +76,32 @@ public class loginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String username = request.getParameter("username");
+         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        try(Connection conn = Accounts.getConnection()) {
-            String sql = "SELECT  * FROM accounts WHERE username=? AND PASSWORD=?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, username);
-            ps.setString(2, password);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()){
-              String role = rs.getString("role");
-              HttpSession session = request.getSession();
-              session.setAttribute("user", username);
-              session.setAttribute("role", role);
-              if("admin".equalsIgnoreCase(role)){
-                  response.sendRedirect("dashboard.jsp");
-              }else{
-                  response.sendRedirect("index.jsp");
-              }
-             
-            }
-            else{
-                response.sendRedirect("login.jsp?error=1");
 
-            }     
-        } catch (Exception e) {
-             e.printStackTrace();
-            response.getWriter().println("Lỗi kết nối hoặc truy vấn CSDL!");
+        // 1. Chỉ cần gọi một dòng đến DAO, code trông sạch sẽ hơn rất nhiều
+        taikhoan account = accountDAO.checkLogin(username, password);
+
+        if (account == null) {
+            // Đăng nhập thất bại
+            request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } else {
+            // Đăng nhập thành công
+            HttpSession session = request.getSession();
+            
+            // 2. Lưu toàn bộ đối tượng account vào session
+            session.setAttribute("account", account); 
+
+            // 3. Kiểm tra vai trò và chuyển hướng
+            if ("admin".equalsIgnoreCase(account.getRole())) {
+                response.sendRedirect("dashboard.jsp"); // Hoặc trang admin của bạn
+            } else {
+                response.sendRedirect("index.jsp");
+            }
         }
     }
+    
 
     /**
      * Returns a short description of the servlet.

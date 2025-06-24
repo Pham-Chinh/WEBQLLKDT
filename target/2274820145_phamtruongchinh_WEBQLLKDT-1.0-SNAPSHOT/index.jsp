@@ -1,3 +1,5 @@
+<%@page import="model.taikhoan"%>
+<%@page import="model.taikhoan"%>
 <%@page import="model.Cart"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, model.product, dao.productDAO" %>
@@ -21,7 +23,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/vendor.css">
     <link rel="stylesheet" type="text/css" href="style.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
@@ -47,6 +49,114 @@
         font-weight: bold;
         border: 2px solid white; /* Thêm viền trắng cho nổi bật */
       }
+      /* Thêm vào thẻ <style> của trang */
+
+/* Div chung để căn chỉnh tất cả các mục của user thẳng hàng */
+    .user-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .profile-icon-container {
+            position: relative;
+            display: block;
+        }
+        .notification-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 20px;
+            height: 20px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            border: 2px solid white;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .user-greeting span {
+            font-weight: bold;
+        }
+            /* hover menu profile*/
+.profile-hover-menu {
+        position: relative; /* Bắt buộc phải có để menu con định vị theo */
+        display: inline-block;
+    }
+
+    /* Phần menu ẩn, chỉ hiện ra khi hover */
+    .profile-hover-menu .menu-content {
+        /* Ẩn đi lúc bình thường */
+        visibility: hidden;
+        opacity: 0;
+        
+        position: absolute;
+        right: 0; /* Căn lề phải với icon */
+        top: 100%; /* Hiện ngay bên dưới icon */
+        margin-top: 10px; /* Tạo khoảng cách nhỏ */
+        
+        background-color: white;
+        min-width: 220px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        border-radius: 8px;
+        z-index: 1000;
+        
+        /* Hiệu ứng mờ dần */
+        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+
+    /* ✅ DÒNG CODE THẦN KỲ: Khi hover vào thẻ cha... */
+    .profile-hover-menu:hover .menu-content {
+        /* ...thì menu con sẽ hiện ra */
+        visibility: visible;
+        opacity: 1;
+    }
+
+    /* Tạo kiểu cho các link trong menu */
+    .profile-hover-menu .menu-content a {
+        color: var(--dark-color);
+        padding: 12px 16px;
+        text-decoration: none;
+        display: flex; /* Dùng flex để căn icon và chữ */
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+    }
+
+    .profile-hover-menu .menu-content a:hover {
+        background-color: var(--light-gray-bg);
+    }
+    
+    .profile-hover-menu .menu-content a i {
+        width: 20px;
+        text-align: center;
+        color: var(--text-color);
+    }
+    
+/*    zalo*/
+    /* CSS để làm nút Zalo nổi ở góc màn hình */
+    .zalo-chat-widget {
+        position: fixed; /* Giúp nút luôn ở một vị trí cố định */
+        bottom: 25px;
+        right: 25px;
+        z-index: 1000;
+    }
+    .zalo-chat-widget a {
+        display: block;
+        transition: transform 0.3s ease-in-out;
+    }
+    .zalo-chat-widget a:hover {
+        transform: scale(1.1); /* Hiệu ứng phóng to khi di chuột vào */
+    }
+    .zalo-chat-widget img {
+        width: 60px; /* Kích thước của icon Zalo */
+        height: 60px;
+        border-radius: 50%; /* Bo tròn */
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.3); /* Thêm bóng đổ cho đẹp */
+    }
+
       </style>
 
   </head>
@@ -276,13 +386,66 @@
             </ul>
           </div>
           
-          <div class="col-sm-8 col-lg-2 d-flex gap-5 align-items-center justify-content-center justify-content-sm-end">
-            <ul class="d-flex justify-content-end list-unstyled m-0">
-              <li>
-                <a href="login.jsp" class="p-2 mx-1">
-                  <svg width="24" height="24"><use xlink:href="#user"></use></svg>
-                </a>
-              </li>
+<div class="col-sm-8 col-lg-2 d-flex justify-content-center justify-content-sm-end">
+
+    <%-- ✅ SỬA 1: Thêm class "align-items-center" vào đây để căn tất cả các icon thẳng hàng theo chiều dọc --%>
+    <ul class="d-flex justify-content-end align-items-center list-unstyled m-0">
+
+        <%-- ✅ SỬA 2: Bọc toàn bộ khu vực user vào trong một thẻ <li> cho đúng chuẩn HTML và không bị lệch --%>
+        <li>
+            <div class="user-area">
+                <%-- Code if/else kiểm tra đăng nhập của bạn được đặt ở đây --%>
+               <%-- ✅ BẮT ĐẦU KHỐI CODE DROPDOWN HOÀN CHỈNH --%>
+<%-- Bắt đầu phần logic và HTML --%>
+<%
+    taikhoan loggedInAccount = (taikhoan) session.getAttribute("account");
+%>
+
+<% if (loggedInAccount != null) { %>
+    <%-- NẾU ĐÃ ĐĂNG NHẬP: HIỂN THỊ MENU HOVER --%>
+    <%
+        String username = loggedInAccount.getUsername();
+        String initial = username.substring(0, 1).toUpperCase();
+    %>
+    
+    <div class="profile-hover-menu">
+        <%-- PHẦN LUÔN HIỂN THỊ: Icon và huy hiệu --%>
+        <a href="#" class="profile-icon-container">
+            <svg width="28" height="28"><use xlink:href="#user"></use></svg>
+            <span class="notification-badge"><%= initial %></span>
+        </a>
+        
+        <%-- PHẦN BỊ ẨN: Nội dung menu --%>
+        <div class="menu-content">
+            <a href="profile.jsp">
+                <i class="fas fa-user-circle"></i>
+                <span>Thông tin cá nhân</span>
+            </a>
+            <a href="${pageContext.request.contextPath}/my-orders">
+                <i class="fas fa-box-open"></i>
+                <span>Đơn hàng của tôi</span>
+            </a>
+            <a href="${pageContext.request.contextPath}/LogoutServlet">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Đăng xuất</span>
+            </a>
+        </div>
+    </div>
+
+<% } else { %>
+    <%-- NẾU LÀ KHÁCH: HIỂN THỊ LINK ĐĂNG NHẬP NHƯ CŨ --%>
+    <div class="user-area">
+        <a href="login.jsp" class="p-2 mx-1">
+            <svg width="28" height="28"><use xlink:href="#user"></use></svg>
+        </a>
+    </div>
+<% } %>
+<%-- KẾT THÚC KHỐI CODE --%>
+<%-- KẾT THÚC KHỐI CODE --%>
+            </div>
+        </li>
+<%-- KẾT THÚC KHỐI CODE --%>
+
               <li>
                 <a href="#" class="p-2 mx-1">
                   <svg width="24" height="24"><use xlink:href="#wishlist"></use></svg>
@@ -291,26 +454,26 @@
 <%-- ✅ THAY THẾ TOÀN BỘ THẺ <li> CHỨA ICON GIỎ HÀNG BẰNG KHỐI NÀY --%>
 <%-- Code này hoàn toàn không dùng AJAX --%>
 
-<li style="position: relative;">
-    <a href="cart.jsp" id="cart-icon" class="p-2 mx-1">
-        <svg width="24" height="24"><use xlink:href="#shopping-bag"></use></svg>
-    </a>
-    <span class="cart-badge">
-        <%
-            // Đoạn code này tự lấy giỏ hàng từ session, không phụ thuộc vào trang nào khác.
-            Cart cartForBadge = (Cart) session.getAttribute("cart");
-            int count = 0;
+            <li style="position: relative;">
+                <a href="cart.jsp" id="cart-icon" class="p-2 mx-1">
+                    <svg width="24" height="24"><use xlink:href="#shopping-bag"></use></svg>
+                </a>
+                <span class="cart-badge">
+                    <%
+                        // Đoạn code này tự lấy giỏ hàng từ session, không phụ thuộc vào trang nào khác.
+                        Cart cartForBadge = (Cart) session.getAttribute("cart");
+                        int count = 0;
 
-            // Nếu giỏ hàng tồn tại và có sản phẩm, thì lấy số lượng.
-            if (cartForBadge != null) {
-                count = cartForBadge.getItems().size();
-            }
+                        // Nếu giỏ hàng tồn tại và có sản phẩm, thì lấy số lượng.
+                        if (cartForBadge != null) {
+                            count = cartForBadge.getItems().size();
+                        }
 
-            // In ra con số cuối cùng.
-            out.print(count);
-        %>
-    </span>
-</li>
+                        // In ra con số cuối cùng.
+                        out.print(count);
+                    %>
+                </span>
+            </li>
             </ul>
           </div>
 
@@ -410,7 +573,7 @@
           <div class="col-md-12">
 
             <div class="section-header d-flex flex-wrap justify-content-between mb-5">
-              <h2 class="section-title">Category</h2>
+              <h2 class="section-title">Danh mục</h2>
 
               <div class="d-flex align-items-center">
                 <a href="#" class="btn btn-primary me-2">Xem tất cả</a>
@@ -430,7 +593,7 @@
               <div class="swiper-wrapper">
                 <a href="category.html" class="nav-link swiper-slide text-center">
                   <img src="images/category-thumb-1.jpg" class="rounded-circle" alt="Category Thumbnail">
-                  <h4 class="fs-6 mt-3 fw-normal category-title">Fruits & Veges</h4>
+                  <h4 class="fs-6 mt-3 fw-normal category-title">Linh kiện</h4>
                 </a>
                 
                
@@ -451,7 +614,7 @@
 
             <div class="banner-blocks">
             
-              <div class="banner-ad d-flex align-items-center large bg-info block-1" style="background: url('images/banner-ad-1.jpg') no-repeat; background-size: cover;">
+              <div class="banner-ad d-flex align-items-center large bg-info block-1" style="background: url('images/banner-ai.jpg') no-repeat; background-size: cover;">
                 <div class="banner-content p-5">
                   <div class="content-wrapper text-light">
                     <h3 class="banner-title text-light">Sản phẩm giảm giá</h3>
@@ -461,7 +624,7 @@
                 </div>
               </div>
               
-              <div class="banner-ad bg-success-subtle block-2" style="background:url('images/banner-ad-2.jpg') no-repeat;background-size: cover">
+              <div class="banner-ad bg-success-subtle block-2" style="background:url('images/ai2rs.jpg') no-repeat;background-size: cover">
                 <div class="banner-content align-items-center p-5">
                   <div class="content-wrapper text-light">
                     <h3 class="banner-title text-light">Combo ưu đãi</h3>
@@ -471,7 +634,7 @@
                 </div>
               </div>
 
-              <div class="banner-ad bg-danger block-3" style="background:url('images/banner-ad-3.jpg') no-repeat;background-size: cover">
+              <div class="banner-ad bg-danger block-3" style="background:url('images/gmnrs.png') no-repeat;background-size: cover">
                 <div class="banner-content align-items-center p-5">
                   <div class="content-wrapper text-light">
                     <h3 class="banner-title text-light">Phiếu giảm giá</h3>
@@ -491,91 +654,100 @@
 
 <!-- Section Sản phẩm nổi bật -->
 <section id="noibat" class="products-carousel">
-  <div class="container-lg overflow-hidden py-5">
-    <div class="row">
-      <div class="col-md-12">
-        <div class="section-header d-flex flex-wrap justify-content-between my-4">
-          <h2 class="section-title">Sản phẩm nổi bật</h2>
-          <div class="d-flex align-items-center">
-            <a href="#" class="btn btn-primary me-2">Xem tất cả</a>
-            <div class="swiper-buttons">
-              <button class="swiper-prev products-carousel-prev btn btn-primary">❮</button>
-              <button class="swiper-next products-carousel-next btn btn-primary">❯</button>
-            </div>  
-          </div>
+    <div class="container-lg overflow-hidden py-5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-header d-flex flex-wrap justify-content-between my-4">
+                    <h2 class="section-title">Sản phẩm nổi bật</h2>
+                    <div class="d-flex align-items-center">
+                        <a href="#" class="btn btn-primary me-2">Xem tất cả</a>
+                        <div class="swiper-buttons">
+                            <button class="swiper-prev products-carousel-prev btn btn-primary">❮</button>
+                            <button class="swiper-next products-carousel-next btn btn-primary">❯</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="swiper products-carousel-swiper">
+                    <div class="swiper-wrapper">
+                        <%
+                            // Giả sử bạn có phương thức getByLabel("phobien") trong DAO
+                            // List<product> phobien = productDAO.getByLabel("phobien");
+                            // Để test, ta có thể dùng getAllProducts()
+                            List<product> noibat = productDAO.getByLabel("noibat");
+
+                            for (product p : noibat) {
+                                String stockStatus = (p.getQuantity() > 0) ? "Còn hàng" : "Hết hàng";
+                        %>
+                        <div class="product-item swiper-slide">
+                            <figure>
+                                <a href="product-detail.jsp?id=<%= p.getId() %>" title="<%= p.getName() %>">
+                                    <img src="ImageServlet?id=<%= p.getId() %>" alt="<%= p.getName() %>" class="tab-image" style="height:160px;object-fit:cover;">
+                                </a>
+                            </figure>
+                            <div class="d-flex flex-column text-center">
+                                <h3 class="fs-6 fw-normal"><%= p.getName() %></h3>
+                                <div>
+                                    <span class="rating">
+                                        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                                        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                                        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                                        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                                        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-half"></use></svg>
+                                    </span>
+                                    <span>(222)</span>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    <span class="text-dark fw-semibold"><%= p.getPrice() %> VNĐ</span>
+                                </div>
+
+                                <div class="stock-status">
+                                    <span class="badge <%= p.getQuantity() > 0 ? "bg-success" : "bg-danger" %> text-white">
+                                        <%= stockStatus %>
+                                    </span>
+                                </div>
+
+                                <%-- ✅ ĐÂY LÀ PHẦN ĐÃ SỬA LẠI HOÀN CHỈNH --%>
+                                <div class="button-area p-3 pt-0">
+                                    <form action="AddtoCart" method="post">
+                                        <div class="row g-1 mt-2">
+
+                                            <div class="col-3">
+                                                <input type="number" name="quantity" class="form-control h-100 border-dark-subtle" 
+                                                       value="1" min="1" 
+                                                       <%= p.getQuantity() == 0 ? "disabled" : "" %> />
+                                            </div>
+
+                                            <div class="col-7">
+                                                <input type="hidden" name="productId" value="<%= p.getId() %>">
+                                                <button type="submit" class="btn btn-primary btn-cart w-100 h-100 add-to-cart-btn"
+                                                        <%= p.getQuantity() == 0 ? "disabled style='pointer-events:none;opacity:0.5'" : "" %>>
+                                                    <svg width="18" height="18">
+                                                        <use xlink:href="#cart"></use>
+                                                    </svg>
+                                                    Add to Cart
+                                                </button>
+                                            </div>
+
+                                            <div class="col-2">
+                                                <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6 d-flex align-items-center justify-content-center h-100">
+                                                    <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
+                                                </a>
+                                            </div>
+
+                                        </div>
+                                    </form>
+                                </div>
+                                <%-- KẾT THÚC PHẦN ĐÃ SỬA --%>
+
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+                </div>
         </div>
-
-        <!-- ✅ Swiper layout chuẩn -->
-        <div class="swiper products-carousel-swiper">
-          <div class="swiper-wrapper">
-
-            <%
-            List<product> noibat = productDAO.getByLabel("noibat");
-            for (product p : noibat) {
-                // Kiểm tra trạng thái sản phẩm
-                String stockStatus = (p.getQuantity() > 0) ? "Còn hàng" : "Hết hàng";
-            %>
-
-            <div class="product-item swiper-slide">
-              <figure>
-                <a href="product-detail.jsp?id=<%= p.getId() %>" title="<%= p.getName() %>">
-                  <img src="ImageServlet?id=<%= p.getId() %>" alt="<%= p.getName() %>" class="tab-image">
-                </a>
-              </figure>
-              <div class="d-flex flex-column text-center">
-                <h3 class="fs-6 fw-normal"><%= p.getName() %></h3>
-                <div>
-                  <span class="rating">
-                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-half"></use></svg>
-                  </span>
-                  <span>(222)</span>
-                </div>
-                <div class="d-flex justify-content-center align-items-center gap-2">
-                  
-                  <span class="text-dark fw-semibold"><%= p.getPrice() %> VNĐ</span>
-                  
-                </div>
-                <div class="stock-status">
-                  <span class="badge <%= p.getQuantity() > 0 ? "bg-success" : "bg-danger" %> text-white">
-                    <%= stockStatus %>
-                  </span>
-                </div>
-                <div class="button-area p-3 pt-0">
-                  <div class="row g-1 mt-2">
-                    <div class="col-3">
-                      <input type="number" name="quantity" class="form-control border-dark-subtle input-number" value="1">
-                    </div>
-                    <div class="col-7">
-                 
-                        <button class="btn btn-primary btn-cart" data-product-id="<%= p.getId() %>">
-  Add to Cart
-</button>
-
-
-
-                    
-                    </div>
-                    <div class="col-2">
-                      <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6">
-                        <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <% } %>
-
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 </section>
 <!--end-->
 <section>
@@ -616,8 +788,7 @@
       </div>
 </section>
 <!--san pham pho bien-->
-<%-- Giả sử productDAO đã được khởi tạo ở đầu trang --%>
-<%-- Ví dụ: ProductDAO productDAO = new ProductDAO(); --%>
+
 
 <section id="phobien" class="products-carousel">
     <div class="container-lg overflow-hidden py-5">
@@ -722,92 +893,103 @@
 
 <!-- Section Sản phẩm mới về -->
 <section id="moive" class="products-carousel">
-  <div class="container-lg overflow-hidden py-5">
-    <div class="row">
-      <div class="col-md-12">
-        <div class="section-header d-flex flex-wrap justify-content-between my-4">
-          <h2 class="section-title">Sản phẩm mới về</h2>
-          <div class="d-flex align-items-center">
-            <a href="index.jsp#moive" class="btn btn-primary me-2" style="text-decoration: none;">Xem tất cả</a>
-            <div class="swiper-buttons">
-              <button class="swiper-prev products-carousel-prev btn btn-primary">❮</button>
-              <button class="swiper-next products-carousel-next btn btn-primary">❯</button>
-            </div>  
-          </div>
+    <div class="container-lg overflow-hidden py-5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-header d-flex flex-wrap justify-content-between my-4">
+                    <h2 class="section-title">Sản phẩm mới về</h2>
+                    <div class="d-flex align-items-center">
+                        <a href="#" class="btn btn-primary me-2">Xem tất cả</a>
+                        <div class="swiper-buttons">
+                            <button class="swiper-prev products-carousel-prev btn btn-primary">❮</button>
+                            <button class="swiper-next products-carousel-next btn btn-primary">❯</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="swiper products-carousel-swiper">
+                    <div class="swiper-wrapper">
+                        <%
+                            // Giả sử bạn có phương thức getByLabel("phobien") trong DAO
+                            // List<product> phobien = productDAO.getByLabel("phobien");
+                            // Để test, ta có thể dùng getAllProducts()
+                            List<product> moive = productDAO.getByLabel("moive");
+
+                            for (product p : moive) {
+                                String stockStatus = (p.getQuantity() > 0) ? "Còn hàng" : "Hết hàng";
+                        %>
+                        <div class="product-item swiper-slide">
+                            <figure>
+                                <a href="product-detail.jsp?id=<%= p.getId() %>" title="<%= p.getName() %>">
+                                    <img src="ImageServlet?id=<%= p.getId() %>" alt="<%= p.getName() %>" class="tab-image" style="height:160px;object-fit:cover;">
+                                </a>
+                            </figure>
+                            <div class="d-flex flex-column text-center">
+                                <h3 class="fs-6 fw-normal"><%= p.getName() %></h3>
+                                <div>
+                                    <span class="rating">
+                                        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                                        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                                        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                                        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
+                                        <svg width="18" height="18" class="text-warning"><use xlink:href="#star-half"></use></svg>
+                                    </span>
+                                    <span>(222)</span>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    <span class="text-dark fw-semibold"><%= p.getPrice() %> VNĐ</span>
+                                </div>
+
+                                <div class="stock-status">
+                                    <span class="badge <%= p.getQuantity() > 0 ? "bg-success" : "bg-danger" %> text-white">
+                                        <%= stockStatus %>
+                                    </span>
+                                </div>
+
+                                <%-- ✅ ĐÂY LÀ PHẦN ĐÃ SỬA LẠI HOÀN CHỈNH --%>
+                                <div class="button-area p-3 pt-0">
+                                    <form action="AddtoCart" method="post">
+                                        <div class="row g-1 mt-2">
+
+                                            <div class="col-3">
+                                                <input type="number" name="quantity" class="form-control h-100 border-dark-subtle" 
+                                                       value="1" min="1" 
+                                                       <%= p.getQuantity() == 0 ? "disabled" : "" %> />
+                                            </div>
+
+                                            <div class="col-7">
+                                                <input type="hidden" name="productId" value="<%= p.getId() %>">
+                                                <button type="submit" class="btn btn-primary btn-cart w-100 h-100 add-to-cart-btn"
+                                                        <%= p.getQuantity() == 0 ? "disabled style='pointer-events:none;opacity:0.5'" : "" %>>
+                                                    <svg width="18" height="18">
+                                                        <use xlink:href="#cart"></use>
+                                                    </svg>
+                                                    Add to Cart
+                                                </button>
+                                            </div>
+
+                                            <div class="col-2">
+                                                <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6 d-flex align-items-center justify-content-center h-100">
+                                                    <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
+                                                </a>
+                                            </div>
+
+                                        </div>
+                                    </form>
+                                </div>
+                                <%-- KẾT THÚC PHẦN ĐÃ SỬA --%>
+
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+                </div>
         </div>
-
-        <!-- ✅ Swiper layout chuẩn -->
-        <div class="swiper products-carousel-swiper">
-          <div class="swiper-wrapper">
-
-            <%
-            List<product> moive = productDAO.getByLabel("moive");
-            for (product p : moive) {
-                // Kiểm tra trạng thái sản phẩm
-                String stockStatus = (p.getQuantity() > 0) ? "Còn hàng" : "Hết hàng";
-            %>
-
-            <div class="product-item swiper-slide">
-              <figure>
-                <a href="product-detail.jsp?id=<%= p.getId() %>" title="<%= p.getName() %>">
-                  <img src="ImageServlet?id=<%= p.getId() %>" alt="<%= p.getName() %>" class="tab-image">
-                </a>
-              </figure>
-              <div class="d-flex flex-column text-center">
-                <h3 class="fs-6 fw-normal"><%= p.getName() %></h3>
-                <div>
-                  <span class="rating">
-                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-full"></use></svg>
-                    <svg width="18" height="18" class="text-warning"><use xlink:href="#star-half"></use></svg>
-                  </span>
-                  <span>(222)</span>
-                </div>
-                <div class="d-flex justify-content-center align-items-center gap-2">
-                  <del><%= p.getPrice() + 10000 %></del>
-                  <span class="text-dark fw-semibold"><%= p.getPrice() %> VNĐ</span>
-                  <span class="badge bg-warning-subtle text-dark px-2">10% OFF</span>
-                </div>
-                
-                <!-- Hiển thị trạng thái "Còn hàng" hay "Hết hàng" -->
-                <div class="stock-status">
-                  <span class="badge <%= p.getQuantity() > 0 ? "bg-success" : "bg-danger" %> text-white">
-                    <%= stockStatus %>
-                  </span>
-                </div>
-
-                <div class="button-area p-3 pt-0">
-                  <div class="row g-1 mt-2">
-                    <div class="col-3">
-                      <input type="number" name="quantity" class="form-control border-dark-subtle input-number" value="1" <%= p.getQuantity() == 0 ? "disabled" : "" %>>
-                    </div>
-                    <div class="col-7">
-                      <a href="#" class="btn btn-primary rounded-1 p-2 fs-7 btn-cart" <%= p.getQuantity() == 0 ? "disabled" : "" %>>
-                        <svg width="18" height="18"><use xlink:href="#cart"></use></svg> Add to Cart
-                      </a>
-                    </div>
-                    <div class="col-2">
-                      <a href="#" class="btn btn-outline-dark rounded-1 p-2 fs-6">
-                        <svg width="18" height="18"><use xlink:href="#heart"></use></svg>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <% } %>
-
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 </section>
 
-<!--end product latest-->
+<!--end moi ve-->
 
 
 
@@ -1110,9 +1292,21 @@
 <script src="js/plugins.js"></script>
 <script src="js/script.js"></script>
 <script src="js/goiysp.js"></script>
-<script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<%-- =============================================== --%>
+<%-- ✅ BẮT ĐẦU: CODE NÚT CHAT ZALO --%>
 
 
 
+<div class="zalo-chat-widget">
+    <%-- Thay đổi số điện thoại của bạn ở đây --%>
+    <a href="https://zalo.me/84394572135" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Icon_of_Zalo.svg/2048px-Icon_of_Zalo.svg.png" alt="Chat với chúng tôi qua Zalo">
+    </a>
+</div>
+<%-- KẾT THÚC: CODE NÚT CHAT ZALO --%>
+<%-- =============================================== --%>
 </body>
 </html>

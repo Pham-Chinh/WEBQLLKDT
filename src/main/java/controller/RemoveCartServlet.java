@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.CartDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Cart;
+import model.taikhoan;
 
 /**
  *
@@ -78,24 +80,47 @@ public class RemoveCartServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        Cart cart = (Cart) session.getAttribute("cart");
-        if(cart != null ){
-            try {
-                String productIDstr = request.getParameter("id");
-                int productID = Integer.parseInt(productIDstr);
-                cart.removeItem(productID);
-                
-                
-            } catch (NumberFormatException e) {
-                System.out.println("Lỗi khi xóa sản phẩm , ID không hợp lệ" + e.getMessage());
+
+    try {
+        int productId = Integer.parseInt(request.getParameter("id"));
+
+        // ✅ BƯỚC QUAN TRỌNG: KIỂM TRA XEM AI ĐANG XÓA
+        taikhoan account = (taikhoan) session.getAttribute("account");
+
+        if (account != null) {
+            // ---- TRƯỜNG HỢP 1: NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP ----
+            // => Xóa sản phẩm trong DATABASE
+            
+            int userId = account.getId();
+            // Gọi phương thức trong CartDAO để xóa sản phẩm khỏi bảng UserCarts
+            CartDAO.removeItem(userId, productId);
+
+        } else {
+            // ---- TRƯỜNG HỢP 2: LÀ KHÁCH (CHƯA ĐĂNG NHẬP) ----
+            // => Xóa sản phẩm trong SESSION (đây là logic cũ của bạn)
+            
+            Cart cart = (Cart) session.getAttribute("cart");
+            if (cart != null) {
+                cart.removeItem(productId);
+                // Lưu lại giỏ hàng đã được cập nhật vào session
+                session.setAttribute("cart", cart);
             }
         }
-        response.sendRedirect("cart.jsp");
+        
+        // Sau khi xóa xong, đặt một thông báo thành công để trang cart.jsp có thể hiển thị
+        session.setAttribute("message", "Đã xóa sản phẩm khỏi giỏ hàng.");
+
+    } catch (NumberFormatException e) {
+        System.out.println("Lỗi khi xóa sản phẩm, ID không hợp lệ: " + e.getMessage());
+        e.printStackTrace();
     }
 
+    // Luôn chuyển hướng về trang giỏ hàng sau khi xử lý
+    response.sendRedirect("cart.jsp");
+ }
     /**
      * Returns a short description of the servlet.
      *

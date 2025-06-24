@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import model.product;
 
 public class OrderDAO {
 
@@ -21,39 +22,44 @@ public class OrderDAO {
      * Lấy tất cả các đơn hàng, sắp xếp theo ngày mới nhất.
      * @return Danh sách đơn hàng.
      */
-    public static List<Order> getAllOrders() {
-        List<Order> list = new ArrayList<>();
-        String sql = "SELECT * FROM Orders ORDER BY order_date DESC";
+    public static List<Order> getOrdersByUserId(int userId) {
+    List<Order> list = new ArrayList<>();
+    String sql = "SELECT * FROM Orders WHERE user_id = ? ORDER BY order_date DESC";
+    
+    try (Connection conn = Accounts.getConnection(); // Sử dụng lớp kết nối Accounts của bạn
+         PreparedStatement ps = conn.prepareStatement(sql)) {
         
-        // Sử dụng try-with-resources giống như trong accountDAO
-        try (Connection conn = Accounts.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            
-            while (rs.next()) {
-                Order order = new Order(
-                    rs.getInt("order_id"),
-                    rs.getString("customer_name"),
-                    rs.getTimestamp("order_date"),
-                    rs.getDouble("total_amount"),
-                    rs.getString("payment_method"),
-                    rs.getString("status")
-                );
-                list.add(order);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
+        ps.setInt(1, userId);
+        ResultSet rs = ps.executeQuery();
 
+        while (rs.next()) {
+            // Dùng constructor đầy đủ của lớp Order
+            Order order = new Order(
+               rs.getInt("order_id"),
+                (Integer) rs.getObject("user_id"),
+                rs.getString("customer_name"),
+                rs.getString("customer_phone"),
+                rs.getString("shipping_address"),
+                rs.getString("notes"),
+                rs.getTimestamp("order_date"),
+                rs.getDouble("total_amount"),
+                rs.getString("payment_method"),
+                rs.getString("status")
+            );
+            list.add(order);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
     /**
      * Phương thức quan trọng để lưu đơn hàng mới.
      * Vì nó thao tác trên 2 bảng (Orders và OrderDetails), chúng ta BẮT BUỘC phải dùng Transaction.
      * Đây là điểm khác biệt duy nhất so với các hàm add/update đơn giản trong accountDAO.
      */
-    public static int saveOrder(Cart cart, String name, String phone, String address, String notes, String paymentMethod) {
-        String sqlOrder = "INSERT INTO Orders (customer_name, customer_phone, shipping_address, notes, total_amount, payment_method) VALUES (?, ?, ?, ?, ?, ?)";
+    public static int saveOrder(Cart cart, String name, String phone, String address, String notes, String paymentMethod,Integer userId) {
+        String sqlOrder = "INSERT INTO Orders (customer_name, customer_phone, shipping_address, notes, total_amount, payment_method,user_id) VALUES (?, ?, ?, ?, ?, ?,?)";
         String sqlOrderDetail = "INSERT INTO OrderDetails (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
         
         Connection conn = null;
@@ -71,7 +77,13 @@ public class OrderDAO {
             psOrder.setString(4, notes);
             psOrder.setDouble(5, cart.getTotalAmount());
             psOrder.setString(6, paymentMethod);
-            psOrder.executeUpdate();
+              if (userId != null && userId > 0) {
+            psOrder.setInt(7, userId);
+        } else {
+            psOrder.setNull(7, java.sql.Types.INTEGER);
+        }
+        psOrder.executeUpdate();
+        
 
             // Lấy order_id vừa được tạo
             ResultSet rs = psOrder.getGeneratedKeys();
@@ -141,12 +153,16 @@ public List<Order> searchOrdersByCustomerName(String customerName) {
         try (ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Order order = new Order(
-                    rs.getInt("order_id"),
-                    rs.getString("customer_name"),
-                    rs.getTimestamp("order_date"),
-                    rs.getDouble("total_amount"),
-                    rs.getString("payment_method"),
-                    rs.getString("status")
+               rs.getInt("order_id"),
+                (Integer) rs.getObject("user_id"),
+                rs.getString("customer_name"),
+                rs.getString("customer_phone"),
+                rs.getString("shipping_address"),
+                rs.getString("notes"),
+                rs.getTimestamp("order_date"),
+                rs.getDouble("total_amount"),
+                rs.getString("payment_method"),
+                rs.getString("status")
                 );
                 list.add(order);
             }
@@ -169,7 +185,59 @@ public List<Order> searchOrdersByCustomerName(String customerName) {
             e.printStackTrace();
         }
     }
+    // Thêm vào file dao/orderDAO.java
+public static Order getOrderById(int orderId) {
+    String sql = "SELECT * FROM Orders WHERE order_id = ?";
+    try (Connection conn = Accounts.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, orderId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return new Order(
+               rs.getInt("order_id"),
+                (Integer) rs.getObject("user_id"),
+                rs.getString("customer_name"),
+                rs.getString("customer_phone"),
+                rs.getString("shipping_address"),
+                rs.getString("notes"),
+                rs.getTimestamp("order_date"),
+                rs.getDouble("total_amount"),
+                rs.getString("payment_method"),
+                rs.getString("status")
+            );
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+public static List<CartItem> getOrderDetailsById(int orderId) {
+    List<CartItem> list = new ArrayList<>();
+    String sql = "SELECT p.*, od.quantity as order_quantity, od.price as price_at_purchase " +
+                 "FROM OrderDetails od JOIN products p ON od.product_id = p.id " +
+                 "WHERE od.order_id = ?";
     
+    try (Connection conn = Accounts.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        
+        ps.setInt(1, orderId);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            product p = new product();
+            p.setId(rs.getInt("id"));
+            p.setName(rs.getString("name"));
+            // Lấy giá tại thời điểm mua hàng thay vì giá hiện tại của sản phẩm
+            p.setPrice(rs.getDouble("price_at_purchase")); 
+            
+            int quantityInOrder = rs.getInt("order_quantity");
+            list.add(new CartItem(p, quantityInOrder));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
     
     // Tạm thời chưa cần hàm delete order vì nó khá nguy hiểm và cần xử lý phức tạp (xóa cả details)
 }

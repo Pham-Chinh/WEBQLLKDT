@@ -58,7 +58,7 @@
 
 <table>
     <tr>
-        <th>STT</th><th>Username</th><th>Password</th><th>Vai trò</th><th>Hành động</th>
+        <th>STT</th><th>Username</th><th>Password</th><th>Vai trò</th><th>Chức năng</th>
     </tr>
 <%
     List<taikhoan> list = (List<taikhoan>) request.getAttribute("listAccount");

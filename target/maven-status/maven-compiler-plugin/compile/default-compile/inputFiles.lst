@@ -3,9 +3,13 @@ C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\Accounts.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\accountServlet.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\AddtoCart.java
+C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\CancelOrderServlet.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\CartApiServlet.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\ImageServlet.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\loginServlet.java
+C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\LogoutServlet.java
+C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\MyOrdersServlet.java
+C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\OrderDetailServlet.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\OrderManagerServlet.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\PlaceOrderServlet.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\productServlet.java
@@ -14,6 +18,7 @@ C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\resgisterServlet.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\controller\UpdatetoCart.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\dao\accountDAO.java
+C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\dao\CartDAO.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\dao\OrderDAO.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\dao\productDAO.java
 C:\Users\Admin\OneDrive\Máy tính\2274820145_phamtruongchinh_WEBQLLKDT\src\main\java\model\Cart.java

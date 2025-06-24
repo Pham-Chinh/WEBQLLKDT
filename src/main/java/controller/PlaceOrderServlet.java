@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Cart;
+import model.taikhoan;
 
 /**
  *
@@ -79,6 +80,11 @@ public class PlaceOrderServlet extends HttpServlet {
         
         // ✅ CHỈ LẤY GIỎ HÀNG CHÍNH
         Cart cart = (Cart) session.getAttribute("cart");
+        taikhoan account = (taikhoan)session.getAttribute("account");
+        Integer userID = null;
+        if(account != null){
+            userID = account.getId();
+        }
 
         // Lấy thông tin khách hàng từ form
         String name = request.getParameter("name");
@@ -87,9 +93,9 @@ public class PlaceOrderServlet extends HttpServlet {
         String notes = request.getParameter("notes");
         String paymentMethod = request.getParameter("paymentMethod");
 
-        if (cart != null && !cart.isEmpty()) {
+        if (cart != null && !cart.isEmpty() && name != null && !name.isEmpty()) {
             OrderDAO orderDAO = new OrderDAO();
-            int orderId = orderDAO.saveOrder(cart, name, phone, address, notes, paymentMethod);
+            int orderId = orderDAO.saveOrder(cart, name, phone, address, notes, paymentMethod,userID);
 
             if (orderId > 0) {
                 // Nếu lưu đơn hàng thành công

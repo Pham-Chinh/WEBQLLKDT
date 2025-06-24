@@ -1,17 +1,35 @@
+<%@page import="dao.CartDAO"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.*, java.util.*, java.text.NumberFormat, java.util.Locale" %>
 
 <%
-    // Lấy giỏ hàng từ session, nếu chưa có thì khởi tạo mới
-    Cart cart = (Cart) session.getAttribute("cart");
-    if (cart == null) {
-        cart = new Cart();
-        session.setAttribute("cart", cart);
+    // ✅ LOGIC MỚI ĐỂ LẤY GIỎ HÀNG
+    Cart cart = null;
+    taikhoan loggedInAccount = (taikhoan) session.getAttribute("account");
+
+    if (loggedInAccount != null) {
+        // Nếu đã đăng nhập, lấy giỏ hàng từ DATABASE
+        int userId = loggedInAccount.getId();
+        cart = CartDAO.getCartByUserId(userId);
+    } else {
+        // Nếu là khách, lấy giỏ hàng từ SESSION
+        cart = (Cart) session.getAttribute("cart");
     }
 
-    // Định dạng tiền tệ
+    // Nếu sau tất cả các bước mà giỏ hàng vẫn là null, hãy tạo một giỏ hàng mới
+    if (cart == null) {
+        cart = new Cart();
+    }
+    
+    // Lưu lại giỏ hàng vào session (quan trọng cho các servlet khác và để hiển thị huy hiệu)
+    session.setAttribute("cart", cart);
+
     NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 %>
+
+<%-- Phần còn lại của file cart.jsp giữ nguyên --%>
+...
+
 <html>
 <head>
     <title>Giỏ hàng</title>
